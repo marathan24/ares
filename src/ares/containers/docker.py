@@ -4,8 +4,6 @@ import asyncio
 import dataclasses
 import functools
 import io
-import json
-import logging
 import pathlib
 import tarfile
 from typing import cast
@@ -15,36 +13,7 @@ import docker.errors
 import docker.models.containers
 import docker.models.images
 
-from ares import config
 from ares.containers import containers
-
-_LOGGER = logging.getLogger(__name__)
-
-
-def _clear_docker_credentials() -> None:
-    """Clear stored Docker Hub credentials to allow anonymous pulls.
-
-    This removes auth entries from ~/.docker/config.json for Docker Hub,
-    allowing Docker to make unauthenticated requests (which don't require email verification).
-    """
-    docker_config_path = pathlib.Path.home() / ".docker" / "config.json"
-    if not docker_config_path.exists():
-        return
-
-    try:
-        with open(docker_config_path) as f:
-            docker_config = json.load(f)
-
-        if docker_config.get("auths"):
-            docker_hub_keys = [k for k in docker_config["auths"] if "docker.io" in k or "index.docker.io" in k]
-            if docker_hub_keys:
-                for key in docker_hub_keys:
-                    del docker_config["auths"][key]
-                with open(docker_config_path, "w") as f:
-                    json.dump(docker_config, f, indent=2)
-                _LOGGER.info("Cleared Docker Hub credentials to enable anonymous pulls")
-    except Exception as e:
-        _LOGGER.warning("Failed to clear Docker credentials: %s", e)
 
 
 def _make_docker_client() -> docker.DockerClient:
@@ -88,10 +57,6 @@ class DockerContainer(containers.Container):
 
     async def start(self, env: dict[str, str] | None = None) -> None:
         """Start the container."""
-        # If skip_auth is enabled, clear stored credentials to use anonymous pulls
-        if config.CONFIG.docker_skip_auth:
-            _clear_docker_credentials()
-
         if self.image is None:
             if self.dockerfile_path is None:
                 raise ValueError("Must specify one of image or dockerfile_path")

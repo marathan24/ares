@@ -45,9 +45,5 @@ class _Config(pydantic_settings.BaseSettings):
     daytona_auto_stop_interval: int = 30  # Minutes.
     daytona_delete_on_stop: bool = True
 
-    # Set to true to skip Docker Hub authentication and use anonymous pulls.
-    # This avoids "email must be verified" errors with stored Docker credentials.
-    docker_skip_auth: bool = False
-
 
 CONFIG = _Config()  # type: ignore
