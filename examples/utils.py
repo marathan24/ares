@@ -29,10 +29,7 @@ def print_step(
 
     if observation is not None:
         messages = list(observation.messages)
-        if messages:
-            observation_content = messages[-1].get("content", "")
-        else:
-            observation_content = "(no messages)"
+        observation_content = messages[-1].get("content", "") if messages else "(no messages)"
         observation_preview = str(observation_content)[:200]
         if len(str(observation_content)) > 200:
             observation_preview += "..."
