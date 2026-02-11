@@ -61,6 +61,7 @@ dev = [
     "hatchling>=1.28.0",
     "twine>=6.2.0",
 ]
+aider = ["aider-chat>=0.82", "audioop-lts>=0.2.2; python_version>='3.13'"]
 examples = [
     "transformers>=4.57.3",
     "llama-cpp-python>=0.3.16",
@@ -89,4 +90,76 @@ exclude = [
     ".git",
     "__pycache__",
     "node_modules"
+]
+
+[tool.uv]
+# aider-chat only supports Python <3.13. Restrict resolution to avoid impossible
+# dependency splits for Python 3.14+ which cause cascading conflicts.
+environments = ["python_version < '3.14'"]
+
+# aider-chat hard-pins ALL its dependencies to exact versions. Several of these
+# conflict with ARES's requirements. Since we only use aider's core editing
+# functionality (Model, InputOutput, Coder) and not features like /help that
+# depend on specific numpy/torch versions, it is safe to override these pins.
+override-dependencies = [
+    # --- Packages aider pins that conflict with ARES / harbor ---
+    "aiohappyeyeballs>=2.6.1",
+    "aiohttp>=3.12.0",
+    "aiosignal>=1.4.0",
+    "annotated-types>=0.7.0",
+    "anyio>=4.10.0",
+    "attrs>=25.3.0",
+    "beautifulsoup4>=4.13.0",
+    "certifi>=2025.1.1",
+    "cffi>=1.17.0",
+    "charset-normalizer>=3.4.0",
+    "click>=8.2.1",
+    "distro>=1.9.0",
+    "filelock>=3.18.0",
+    "frozenlist>=1.7.0",
+    "fsspec>=2025.7.0",
+    "gitdb>=4.0.12",
+    "gitpython>=3.1.45",
+    "h11>=0.16.0",
+    "harbor>=0.1.38",
+    "httpcore>=1.0.9",
+    "httpx>=0.28.1",
+    "huggingface-hub>=0.34.0",
+    "idna>=3.10",
+    "importlib-metadata>=7.2.1",
+    "jinja2>=3.1.6",
+    "jiter>=0.10.0",
+    "jsonschema>=4.25.1",
+    "jsonschema-specifications>=2025.4.1",
+    "litellm>=1.79.0",
+    "markdown-it-py>=3.0.0",
+    "markupsafe>=3.0.2",
+    "multidict>=6.6.0",
+    "numpy>=2.3.5",
+    "openai>=1.50.0,<=1.100.0",
+    "packaging>=25.0",
+    "pathspec>=0.12.1",
+    "propcache>=0.3.0",
+    "pydantic>=2.12.5",
+    "pydantic-core>=2.41.5",
+    "pygments>=2.19.0",
+    "pyyaml>=6.0.3",
+    "referencing>=0.36.0",
+    "regex>=2025.1.1",
+    "requests>=2.32.5",
+    "rich>=14.1.0",
+    "rpds-py>=0.27.0",
+    "six>=1.17.0",
+    "sniffio>=1.3.1",
+    "soupsieve>=2.7",
+    "tiktoken>=0.12.0",
+    "tokenizers>=0.22.0",
+    "tqdm>=4.67.1",
+    "typing-extensions>=4.15.0",
+    "typing-inspection>=0.4.2",
+    "urllib3>=2.5.0",
+    "watchfiles>=1.1.0",
+    "wcwidth>=0.2.13",
+    "yarl>=1.22.0",
+    "zipp>=3.23.0",
 ]
