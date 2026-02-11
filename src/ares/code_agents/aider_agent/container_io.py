@@ -118,6 +118,21 @@ class ContainerIO(InputOutput):
         """Image support disabled for container-based execution."""
         return None
 
+    def tool_output(self, *messages, log_only=False, bold=False):  # noqa: ARG002
+        """Route Aider's tool output (cost reports, file notifications) to the logger.
+
+        Aider's default tool_output prints token counts and cost to stdout via
+        Rich console. In ARES we don't want that noise in the terminal since
+        the cost is misleading (computed from model_name pricing, not actual cost).
+        """
+        if messages:
+            _LOGGER.debug("[ContainerIO] tool_output: %s", " ".join(str(m) for m in messages))
+
+    def tool_error(self, *messages, strip=True):  # noqa: ARG002
+        """Route Aider's tool errors to the logger instead of stderr."""
+        if messages:
+            _LOGGER.warning("[ContainerIO] tool_error: %s", " ".join(str(m) for m in messages))
+
     def confirm_ask(self, *args, **kwargs):  # noqa: ARG002
         """Auto-confirm all prompts in non-interactive mode."""
         return True
